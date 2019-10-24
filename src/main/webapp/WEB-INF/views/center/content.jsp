@@ -3,15 +3,16 @@
 <%@page import="com.exam.dao.BoardDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML>
 <html>
 <head>
 <meta charset="utf-8">
 <title>Welcome to Fun Web</title>
-<link href="../css/default.css" rel="stylesheet" type="text/css" media="all">
-<link href="../css/subpage.css" rel="stylesheet" type="text/css"  media="all">
-<link href="../css/print.css" rel="stylesheet" type="text/css"  media="print">
-<link href="../css/iphone.css" rel="stylesheet" type="text/css" media="screen">
+<link href="css/default.css" rel="stylesheet" type="text/css" media="all">
+<link href="css/subpage.css" rel="stylesheet" type="text/css"  media="all">
+<link href="css/print.css" rel="stylesheet" type="text/css"  media="print">
+<link href="css/iphone.css" rel="stylesheet" type="text/css" media="screen">
 <!--[if lt IE 9]>
 <script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js" type="text/javascript"></script>
 <script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/ie7-squish.js" type="text/javascript"></script>
@@ -20,28 +21,6 @@
 
 
 </head>
-<%
-// 페이지번호 pageNum 파라미터값 가져오기
-String pageNum = request.getParameter("pageNum");
-String search = request.getParameter("search");
-if (search == null){
-	search = "";	
-}
-// 글번호 파라미터값 가져오기
-int num = Integer.parseInt(request.getParameter("num"));
-
-// DAO 객체준비
-BoardDao boardDao = BoardDao.getInstance();
-
-// 조회수 1증가시키는 메소드 호출
-boardDao.updateReadcount(num);
-
-//글번호에 해당하는 레코드 한개 가져오기
-BoardVO boardVO = boardDao.getBoard(num);
-
-// 글작성날짜 형식 "yyyy년 MM월 dd일 hh시mm분ss초"
-SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 hh시mm분ss초");
-%>
 
 <body>
 <div id="wrap">
@@ -64,31 +43,31 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 hh시mm분ss초
 
     <tr>
 	  	<th class="twrite">글번호</th>
-	  	<td class="left" width="160"><%=boardVO.getNum() %></td>
+	  	<td class="left" width="160">${board.num}</td>
 	  	<th class="twrite">조회수</th>
-	  	<td class="left" width="160"><%=boardVO.getReadcount() %></td>
+	  	<td class="left" width="160">${board.readcount}</td>
     </tr>
     <tr>
 	  	<th class="twrite">작성자명</th>
-	  	<td class="left"><%=boardVO.getUsername() %></td>
+	  	<td class="left">${board.username}</td>
 	  	<th class="twrite">작성일자</th>
-	  	<td class="left"><%=sdf.format( boardVO.getReg_date()) %></td>
+	  	<td class="left"><fmt:formatDate value="${board.regDate}" pattern="yyyy.MM.dd" /></td>
     </tr>
     <tr>
 	  	<th class="twrite">글제목</th>
-	  	<td class="left" colspan="3"><%=boardVO.getSubject() %></td>
+	  	<td class="left" colspan="3">${board.subject}</td>
     </tr>
     <tr>
 	  	<th class="twrite">글내용</th>
-	  	<td class="left" colspan="3"><pre><%=boardVO.getContent() %></pre></td>
+	  	<td class="left" colspan="3"><pre>${board.content}</pre></td>
     </tr>
 </table>
 
 <div id="table_search">
-	<input type="button" value="글수정" class="btn" onclick="location.href='update.jsp?num=<%=boardVO.getNum() %>&pageNum=<%=pageNum%>';"/>
-	<input type="button" value="글삭제" class="btn" onclick="checkDelete();"/>
-	<input type="button" value="답글쓰기" class="btn" onclick="location.href='reWrite.jsp?reRef=<%=boardVO.getReRef() %>&reLev=<%=boardVO.getReLev() %>&reSeq=<%=boardVO.getReSeq() %>';"/>
-	<input type="button" value="목록보기" class="btn" onclick="location.href='notice.jsp?pageNum=<%=pageNum%>&search=<%=search%>';"/>
+	<input type="button" value="글수정" class="btn" onclick="location.href='updateForm.do?num=${board.num}&pageNum=${pageNum}';"/>
+	<input type="button" value="글삭제" class="btn" onclick="location.href='deleteForm.do?num=${board.num}&pageNum=${pageNum}'"/>
+	<input type="button" value="답글쓰기" class="btn" onclick="location.href='reWrite.jsp?reRef=${board.reRef}&reLev=${board.reLev}&reSeq=${board.reSeq}';"/>
+	<input type="button" value="목록보기" class="btn" onclick="location.href='notice.do?pageNum=${board.num}';"/>
 </div>
 
 </article>
@@ -101,16 +80,6 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 hh시mm분ss초
     
     
 </div>
-
-<script>
-	function checkDelete() {
-		var result = confirm('<%=boardVO.getNum() %>번 글을 정말로 삭제하시겠습니까?');
-		if (result == true) {
-			location.href='delete.jsp?num=<%=boardVO.getNum() %>&pageNum=<%=pageNum%>';
-		}
-		
-	}
-</script>
 </body>
 </html>   
 

@@ -10,7 +10,7 @@ public class BoardVO {
 	private String content;
 	private int readcount;
 	private String ip;
-	private Timestamp reg_date;
+	private Timestamp regDate;
 	private int reRef;
 	private int reLev;
 	private int reSeq;
@@ -57,11 +57,11 @@ public class BoardVO {
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
-	public Timestamp getReg_date() {
-		return reg_date;
+	public Timestamp getRegDate() {
+		return regDate;
 	}
-	public void setReg_date(Timestamp reg_date) {
-		this.reg_date = reg_date;
+	public void setRegDate(Timestamp reg_date) {
+		this.regDate = reg_date;
 	}
 	public int getReRef() {
 		return reRef;
@@ -88,7 +88,7 @@ public class BoardVO {
 		builder.append("BoardVO [num=").append(num).append(", username=").append(username).append(", passwd=")
 				.append(passwd).append(", subject=").append(subject).append(", content=").append(content)
 				.append(", readcount=").append(readcount).append(", ip=").append(ip).append(", reg_date=")
-				.append(reg_date).append(", reRef=").append(reRef).append(", reLev=").append(reLev).append(", reSeq=")
+				.append(regDate).append(", reRef=").append(reRef).append(", reLev=").append(reLev).append(", reSeq=")
 				.append(reSeq).append("]");
 		return builder.toString();
 	}

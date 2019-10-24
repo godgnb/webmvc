@@ -3,7 +3,14 @@ package com.exam.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.exam.controller.board.ContentAction;
+import com.exam.controller.board.DeleteAction;
 import com.exam.controller.board.NoticeAction;
+import com.exam.controller.board.UpdateAction;
+import com.exam.controller.board.UpdateFormAction;
+import com.exam.controller.board.deleteFormAction;
+import com.exam.controller.board.writeAction;
+import com.exam.controller.board.writeFormAction;
 import com.exam.controller.member.JoinIdDupCheckAction;
 import com.exam.controller.member.MainAction;
 import com.exam.controller.member.MemberJoinAction;
@@ -46,7 +53,13 @@ public class ActionFactory {
 		
 		// board 명령어 관련 Action객체 등록
 		map.put("/notice.do", new NoticeAction());
-		
+		map.put("/writeForm.do", new writeFormAction());
+		map.put("/write.do", new writeAction());
+		map.put("/content.do", new ContentAction());
+		map.put("/updateForm.do", new UpdateFormAction());
+		map.put("/update.do", new UpdateAction());
+		map.put("/deleteForm.do", new deleteFormAction());
+		map.put("/delete.do", new DeleteAction());
 	} // 생성자
 	
 	
