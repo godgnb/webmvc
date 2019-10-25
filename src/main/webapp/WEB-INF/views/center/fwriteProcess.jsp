@@ -29,7 +29,9 @@ int maxSize = 1024 * 1024 * 10; // 10MB
 // 5 파일이름 중복처리
 
 // 파일업로드 수행 완료
-MultipartRequest multi = new MultipartRequest(request, realPath, maxSize, "utf-8", new DefaultFileRenamePolicy());
+MultipartRequest multi = new MultipartRequest(
+		request, realPath, maxSize, "utf-8",
+		new DefaultFileRenamePolicy());
 
 
 //===================== 게시판 글 등록 처리 시작 ===================== 
@@ -43,7 +45,7 @@ boardVO.setPasswd(multi.getParameter("passwd"));
 boardVO.setSubject(multi.getParameter("subject"));
 boardVO.setContent(multi.getParameter("content"));
 // 글등록날짜, IP주소 값 저장
-boardVO.setReg_date(new Timestamp(System.currentTimeMillis()));
+boardVO.setRegDate(new Timestamp(System.currentTimeMillis()));
 boardVO.setIp(request.getRemoteAddr());
 
 

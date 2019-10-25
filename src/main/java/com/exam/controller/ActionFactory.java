@@ -3,7 +3,22 @@ package com.exam.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.exam.controller.board.ContentAction;
+import com.exam.controller.board.DeleteAction;
+import com.exam.controller.board.FileContentAction;
+import com.exam.controller.board.FileDeleteAction;
+import com.exam.controller.board.FileNoticeAction;
+import com.exam.controller.board.FileUpdateFormAction;
+import com.exam.controller.board.FileWriteAction;
+import com.exam.controller.board.FileWriteFormAction;
 import com.exam.controller.board.NoticeAction;
+import com.exam.controller.board.ReWriteAction;
+import com.exam.controller.board.ReWriteFormAction;
+import com.exam.controller.board.UpdateAction;
+import com.exam.controller.board.UpdateFormAction;
+import com.exam.controller.board.deleteFormAction;
+import com.exam.controller.board.writeAction;
+import com.exam.controller.board.writeFormAction;
 import com.exam.controller.member.JoinIdDupCheckAction;
 import com.exam.controller.member.MainAction;
 import com.exam.controller.member.MemberJoinAction;
@@ -46,6 +61,22 @@ public class ActionFactory {
 		
 		// board 명령어 관련 Action객체 등록
 		map.put("/notice.do", new NoticeAction());
+		map.put("/writeForm.do", new writeFormAction());
+		map.put("/write.do", new writeAction());
+		map.put("/content.do", new ContentAction());
+		map.put("/updateForm.do", new UpdateFormAction());
+		map.put("/update.do", new UpdateAction());
+		map.put("/deleteForm.do", new deleteFormAction());
+		map.put("/delete.do", new DeleteAction());
+		map.put("/reWriteForm.do", new ReWriteFormAction());
+		map.put("/reWrite.do", new ReWriteAction());
+		map.put("/fnotice.do", new FileNoticeAction());
+		map.put("/fwriteForm.do", new FileWriteFormAction());
+		map.put("/fwrite.do", new FileWriteAction());
+		map.put("/fcontent.do", new FileContentAction());		
+		map.put("/fdelete.do", new FileDeleteAction());
+		map.put("/fupdate.do", new FileUpdateFormAction());
+		
 		
 	} // 생성자
 	

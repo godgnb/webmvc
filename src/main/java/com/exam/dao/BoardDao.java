@@ -67,7 +67,7 @@ public class BoardDao {
 			pstmt.setString(5, boardVO.getContent());
 			pstmt.setInt(6, boardVO.getReadcount());
 			pstmt.setString(7, boardVO.getIp());
-			pstmt.setTimestamp(8, boardVO.getReg_date());
+			pstmt.setTimestamp(8, boardVO.getRegDate());
 			pstmt.setInt(9, boardVO.getReRef());
 			pstmt.setInt(10, boardVO.getReLev());
 			pstmt.setInt(11, boardVO.getReSeq());
@@ -265,7 +265,7 @@ public class BoardDao {
 				boardVO.setContent(rs.getString("content"));
 				boardVO.setReadcount(rs.getInt("readcount"));
 				boardVO.setIp(rs.getString("ip"));
-				boardVO.setReg_date(rs.getTimestamp("reg_date"));
+				boardVO.setRegDate(rs.getTimestamp("reg_date"));
 				boardVO.setReRef(rs.getInt("re_ref"));
 				boardVO.setReLev(rs.getInt("re_lev"));
 				boardVO.setReSeq(rs.getInt("re_seq"));
@@ -425,7 +425,7 @@ public class BoardDao {
 				boardVO.setContent(rs.getString("content"));
 				boardVO.setReadcount(rs.getInt("readcount"));
 				boardVO.setIp(rs.getString("ip"));
-				boardVO.setReg_date(rs.getTimestamp("reg_date"));
+				boardVO.setRegDate(rs.getTimestamp("reg_date"));
 				boardVO.setReRef(rs.getInt("re_ref"));
 				boardVO.setReLev(rs.getInt("re_lev"));
 				boardVO.setReSeq(rs.getInt("re_seq"));
@@ -577,7 +577,7 @@ num		subject				reRef		reLev	   [reSeq]
 			pstmt.setString(5, boardVO.getContent());
 			pstmt.setInt(6, boardVO.getReadcount());
 			pstmt.setString(7, boardVO.getIp());
-			pstmt.setTimestamp(8, boardVO.getReg_date());
+			pstmt.setTimestamp(8, boardVO.getRegDate());
 			pstmt.setInt(9, boardVO.getReRef()); // 그대로
 			pstmt.setInt(10, boardVO.getReLev() + 1); // re_lev+1
 			pstmt.setInt(11, boardVO.getReSeq() + 1); // re_seq+1

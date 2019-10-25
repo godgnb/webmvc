@@ -1,20 +1,16 @@
-<%@page import="java.util.List"%>
-<%@page import="com.exam.VO.AttachVO"%>
-<%@page import="com.exam.dao.AttachDao"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="com.exam.VO.BoardVO"%>
-<%@page import="com.exam.dao.BoardDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>        
 <!DOCTYPE HTML>
 <html>
 <head>
 <meta charset="utf-8">
 <title>Welcome to Fun Web</title>
-<link href="../css/default.css" rel="stylesheet" type="text/css" media="all">
-<link href="../css/subpage.css" rel="stylesheet" type="text/css"  media="all">
-<link href="../css/print.css" rel="stylesheet" type="text/css"  media="print">
-<link href="../css/iphone.css" rel="stylesheet" type="text/css" media="screen">
+<link href="css/default.css" rel="stylesheet" type="text/css" media="all">
+<link href="css/subpage.css" rel="stylesheet" type="text/css"  media="all">
+<link href="css/print.css" rel="stylesheet" type="text/css"  media="print">
+<link href="css/iphone.css" rel="stylesheet" type="text/css" media="screen">
 <!--[if lt IE 9]>
 <script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js" type="text/javascript"></script>
 <script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/ie7-squish.js" type="text/javascript"></script>
@@ -23,40 +19,10 @@
 
 
 </head>
-<%
-// 페이지번호 pageNum 파라미터값 가져오기
-String pageNum = request.getParameter("pageNum");
-String search = request.getParameter("search");
-if (search == null){
-	search = "";	
-}
-// 글번호 파라미터값 가져오기
-int num = Integer.parseInt(request.getParameter("num"));
-
-// DAO 객체준비
-BoardDao boardDao = BoardDao.getInstance();
-
-// 조회수 1증가시키는 메소드 호출
-boardDao.updateReadcount(num);
-
-//글번호에 해당하는 레코드 한개 가져오기
-BoardVO boardVO = boardDao.getBoard(num);
-
-// 글작성날짜 형식 "yyyy년 MM월 dd일 hh시mm분ss초"
-SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 hh시mm분ss초");
-
-// AttachDao 객체준비
-AttachDao attachDao = AttachDao.getInstance();
-
-//글번호에 해당하는 첨부파일정보 가져오기
-List<AttachVO> attachList = attachDao.getAttaches(num);
-%>
-
 <body>
 <div id="wrap">
   	<!-- 헤더 영역 -->
   	<jsp:include page="../include/header.jsp" />
-  
   
   	<div class="clear"></div>
  	<div id="sub_img_center"></div>
@@ -73,54 +39,54 @@ List<AttachVO> attachList = attachDao.getAttaches(num);
 
     <tr>
 	  	<th class="twrite">글번호</th>
-	  	<td class="left" width="160"><%=boardVO.getNum() %></td>
+	  	<td class="left" width="160">${board.num}</td>
 	  	<th class="twrite">조회수</th>
-	  	<td class="left" width="160"><%=boardVO.getReadcount() %></td>
+	  	<td class="left" width="160">${board.readcount}</td>
     </tr>
     <tr>
 	  	<th class="twrite">작성자명</th>
-	  	<td class="left"><%=boardVO.getUsername() %></td>
+	  	<td class="left">${board.username}</td>
 	  	<th class="twrite">작성일자</th>
-	  	<td class="left"><%=sdf.format( boardVO.getReg_date()) %></td>
+	  	<td class="left"><fmt:formatDate value="${board.regDate}" pattern="yyyy년 MM월 dd일 hh시 mm분 ss초"/> </td>
     </tr>
     <tr>
 	  	<th class="twrite">글제목</th>
-	  	<td class="left" colspan="3"><%=boardVO.getSubject() %></td>
+	  	<td class="left" colspan="3">${board.subject}</td>
     </tr>
     <tr>
 	  	<th class="twrite">파일</th>
 	  	<td class="left" colspan="3">
-	  		<%
-	  		for (AttachVO attachVO : attachList) {
-	  			if (attachVO.getFiletype().equals("I")) { // 이미지 타입
-		  			%>
-		  			<a href="../upload/<%=attachVO.getFilename() %>">
-		  				<img src="../upload/<%=attachVO.getFilename() %>" />
-		  			</a>
-		  			<%
-		  		} else {
-		  			%>
-		  			<a href="../upload/<%=attachVO.getFilename() %>">
-		  				<%=attachVO.getFilename() %>
-		  			</a><br>
-		  			<%
-		  		}
-		  	}  		
-	  		%>
-	  		<%=boardVO.getSubject() %>
+	  		<c:forEach var="attach" items="${attachList}">
+	  			<c:choose>
+					<c:when test="${attach.filetype eq 'I'}"><%-- 이미지 타입 파일 --%>
+						<a href="upload/${attach.filename}">
+			  				<img src="upload/${attach.filename}" width="50" height="50"/>
+			  			</a>				
+					</c:when>	  			
+	  				<c:otherwise><%-- 이미지가 아닌 일반 타입 파일 --%>
+	  					<a href="upload/${attach.filename}">
+			  				${attach.filename}
+			  			</a><br>
+	  				</c:otherwise>
+	  			</c:choose>
+	  		</c:forEach>
 	  	</td>
     </tr>
     <tr>
 	  	<th class="twrite">글내용</th>
-	  	<td class="left" colspan="3"><pre><%=boardVO.getContent() %></pre></td>
+	  	<td class="left" colspan="3"><pre>${board.content}</pre></td>
     </tr>
 </table>
 
 <div id="table_search">
-	<input type="button" value="글수정" class="btn" onclick="location.href='fupdate.jsp?num=<%=boardVO.getNum() %>&pageNum=<%=pageNum%>';"/>
-	<input type="button" value="글삭제" class="btn" onclick="checkDelete();"/>
-	<input type="button" value="답글쓰기" class="btn" onclick="location.href='reWrite.jsp?reRef=<%=boardVO.getReRef() %>&reLev=<%=boardVO.getReLev() %>&reSeq=<%=boardVO.getReSeq() %>';"/>
-	<input type="button" value="목록보기" class="btn" onclick="location.href='fnotice.jsp?pageNum=<%=pageNum%>&search=<%=search%>';"/>
+	<c:if test="${not empty id and id eq board.username}">
+		<input type="button" value="글수정" class="btn" onclick="location.href='fupdate.do?num=${board.num}&pageNum=${pageNum}';"/>
+		<input type="button" value="글삭제" class="btn" onclick="checkDelete();"/>
+	</c:if>
+	<c:if test="${not empty id}">
+		<input type="button" value="답글쓰기" class="btn" onclick="location.href='reWrite.do?reRef=${board.reRef}&reLev=${board.reLev}&reSeq=${board.reSeq}';"/>	
+	</c:if>
+		<input type="button" value="목록보기" class="btn" onclick="location.href='fnotice.do?pageNum=${pageNum}';"/>
 </div>
 
 </article>
@@ -129,17 +95,14 @@ List<AttachVO> attachList = attachDao.getAttaches(num);
     
     <!-- 푸터 영역 -->
     <jsp:include page="../include/footer.jsp" />
-    
-    
-    
 </div>
 
 <script>
 	function checkDelete() {
-		var result = confirm('<%=boardVO.getNum() %>번 글을 정말로 삭제하시겠습니까?');
+		var result = confirm('${board.num}번 글을 정말로 삭제하시겠습니까?');
 		
 		if (result == true) {
-			location.href='fdelete.jsp?num=<%=boardVO.getNum() %>&pageNum=<%=pageNum%>';
+			location.href='fdelete.do?num=${board.num}&pageNum=${pageNum}';
 		}
 		
 	}
