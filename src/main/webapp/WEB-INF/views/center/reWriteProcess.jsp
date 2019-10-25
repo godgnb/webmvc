@@ -18,7 +18,7 @@
 
 <%-- 글등록날짜, IP주소 값 저장 --%>
 <%
-boardVO.setReg_date(new Timestamp(System.currentTimeMillis()));
+boardVO.setRegDate(new Timestamp(System.currentTimeMillis()));
 boardVO.setIp(request.getRemoteAddr());
 %>
 

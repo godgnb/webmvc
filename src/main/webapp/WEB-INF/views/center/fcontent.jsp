@@ -81,7 +81,7 @@ List<AttachVO> attachList = attachDao.getAttaches(num);
 	  	<th class="twrite">작성자명</th>
 	  	<td class="left"><%=boardVO.getUsername() %></td>
 	  	<th class="twrite">작성일자</th>
-	  	<td class="left"><%=sdf.format( boardVO.getReg_date()) %></td>
+	  	<td class="left"><%=sdf.format( boardVO.getRegDate()) %></td>
     </tr>
     <tr>
 	  	<th class="twrite">글제목</th>

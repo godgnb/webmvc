@@ -111,7 +111,7 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 		  		<%=boardVO.getSubject() %>
 		  	</td>
 		  	<td><%=boardVO.getUsername() %></td>
-		  	<td><%=sdf.format(boardVO.getReg_date()) %></td>
+		  	<td><%=sdf.format(boardVO.getRegDate()) %></td>
 		  	<td><%=boardVO.getReadcount() %></td>
 		  </tr>
 		  <%
