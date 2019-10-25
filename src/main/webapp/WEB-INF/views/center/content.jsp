@@ -1,6 +1,3 @@
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="com.exam.VO.BoardVO"%>
-<%@page import="com.exam.dao.BoardDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -66,7 +63,7 @@
 <div id="table_search">
 	<input type="button" value="글수정" class="btn" onclick="location.href='updateForm.do?num=${board.num}&pageNum=${pageNum}';"/>
 	<input type="button" value="글삭제" class="btn" onclick="location.href='deleteForm.do?num=${board.num}&pageNum=${pageNum}'"/>
-	<input type="button" value="답글쓰기" class="btn" onclick="location.href='reWrite.jsp?reRef=${board.reRef}&reLev=${board.reLev}&reSeq=${board.reSeq}';"/>
+	<input type="button" value="답글쓰기" class="btn" onclick="location.href='reWriteForm.do?reRef=${board.reRef}&reLev=${board.reLev}&reSeq=${board.reSeq}';"/>
 	<input type="button" value="목록보기" class="btn" onclick="location.href='notice.do?pageNum=${board.num}';"/>
 </div>
 

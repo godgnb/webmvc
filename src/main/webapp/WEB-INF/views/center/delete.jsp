@@ -1,5 +1,3 @@
-<%@page import="com.exam.VO.BoardVO"%>
-<%@page import="com.exam.dao.BoardDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE HTML>

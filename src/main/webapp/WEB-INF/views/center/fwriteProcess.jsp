@@ -29,7 +29,9 @@ int maxSize = 1024 * 1024 * 10; // 10MB
 // 5 파일이름 중복처리
 
 // 파일업로드 수행 완료
-MultipartRequest multi = new MultipartRequest(request, realPath, maxSize, "utf-8", new DefaultFileRenamePolicy());
+MultipartRequest multi = new MultipartRequest(
+		request, realPath, maxSize, "utf-8",
+		new DefaultFileRenamePolicy());
 
 
 //===================== 게시판 글 등록 처리 시작 ===================== 
