@@ -35,7 +35,7 @@
     
 <h1>File Notice Update</h1>
 
-<form action="fupdateProcess.jsp" method="post" name="frm" onsubmit="return check();" enctype="multipart/form-data">
+<form action="fupdate.do" method="post" name="frm" onsubmit="return check();" enctype="multipart/form-data">
 <%-- 수정할 글번호는 눈에 안보이는 hidden 타입 입력요소 사용 --%>
 <input type="hidden" name="pageNum" value="${pageNum}"/>
 <input type="hidden" name="num" value="${num}"/>
@@ -69,7 +69,7 @@
 				</ul>
 			</c:if>
 			
-			<button type="button" id ="btn" onclick="alert('dd');">새로 업로드</button>
+			<button type="button" id ="btn">새로 업로드</button>
 			<div id="newFilesContainer"></div>
 		</td>
 	</tr>
@@ -100,16 +100,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
-function check() {
-	var objPasswd = document.frm.passwd;
-	if (objPasswd != null) {
-		if (objPasswd.value.length == 0) {
-			alert('게시글 패스워드는 필수 입력사항입니다.');
-			objPasswd.focus();
-			return false;
-		}
-	}
-	
+function check() {	
 	// 수정 의도 확인
 	var result = confirm('${num}번 글을 정말로 수정하시겠습니까?');
 	if (result == false) {
@@ -119,14 +110,12 @@ function check() {
 
 
 // id가 btn인 버튼에 클릭이벤트 연결
-const btn = document.getElementById('btn'); // const => 상수개체 , getElementById => id가 ('')인걸 가져온다
 let num = 1;
-btn.onclick = function () {
+$('#btn').on('click', function () {
 	let str = '<input type="file" name="newFile' + num + '"><br>';
-	let container = document.getElementById('newFilesContainer');
-	container.innerHTML += str; // 뒤에 추가
-	num++;
-};
+	$('#newFilesContainer').append(str); // 뒤에 추가
+	num ++;
+});
 
 
 // class명이 del인 span태그에 클릭이벤트 연결하기
