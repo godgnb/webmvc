@@ -8,6 +8,7 @@ import com.exam.controller.board.DeleteAction;
 import com.exam.controller.board.FileContentAction;
 import com.exam.controller.board.FileDeleteAction;
 import com.exam.controller.board.FileNoticeAction;
+import com.exam.controller.board.FileUpdateAction;
 import com.exam.controller.board.FileUpdateFormAction;
 import com.exam.controller.board.FileWriteAction;
 import com.exam.controller.board.FileWriteFormAction;
@@ -75,8 +76,8 @@ public class ActionFactory {
 		map.put("/fwrite.do", new FileWriteAction());
 		map.put("/fcontent.do", new FileContentAction());		
 		map.put("/fdelete.do", new FileDeleteAction());
-		map.put("/fupdate.do", new FileUpdateFormAction());
-		
+		map.put("/fupdateForm.do", new FileUpdateFormAction());
+		map.put("/fupdate.do", new FileUpdateAction());
 		
 	} // 생성자
 	

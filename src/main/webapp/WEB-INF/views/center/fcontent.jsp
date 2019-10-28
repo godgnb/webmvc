@@ -80,7 +80,7 @@
 
 <div id="table_search">
 	<c:if test="${not empty id and id eq board.username}">
-		<input type="button" value="글수정" class="btn" onclick="location.href='fupdate.do?num=${board.num}&pageNum=${pageNum}';"/>
+		<input type="button" value="글수정" class="btn" onclick="location.href='fupdateForm.do?num=${board.num}&pageNum=${pageNum}';"/>
 		<input type="button" value="글삭제" class="btn" onclick="checkDelete();"/>
 	</c:if>
 	<c:if test="${not empty id}">

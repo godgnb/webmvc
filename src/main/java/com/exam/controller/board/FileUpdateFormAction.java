@@ -1,5 +1,6 @@
 package com.exam.controller.board;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +39,18 @@ public class FileUpdateFormAction implements Action {
 		BoardDao boardDao = BoardDao.getInstance();
 		// 수정할 글 가져오기
 		BoardVO boardVO = boardDao.getBoard(num);
+		
+		// 로그인 아이디와 게시판 글작성자 아이디가 다를때
+		if (!id.equals(boardVO.getUsername())) {
+			response.setContentType("text/html; charset=UTF-8");
+			PrintWriter out = response.getWriter();
+			out.println("<script>");
+			out.println("alert('수정 권한이 없습니다.');");
+			out.println("location.href = 'fnotice.do';");
+			out.println("</script>");
+			out.close();
+			return null;
+		}
 		
 		//AttachDao 객체준비
 		AttachDao attachDao = AttachDao.getInstance();
