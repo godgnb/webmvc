@@ -111,13 +111,16 @@ public class FileUpdateAction implements Action {
 				// 이미지 파일여부 확인
 				File file = new File(realPath, realFileName);
 				String contentType = Files.probeContentType(file.toPath());
-				boolean isImage = contentType.startsWith("image");
-				if(isImage) {
-					attachVO.setFiletype("I"); // Image File
+				if (contentType != null) {
+					boolean isImage = contentType.startsWith("image");
+					if(isImage) {
+						attachVO.setFiletype("I"); // Image File
+					} else {
+						attachVO.setFiletype("O"); // Other
+					}
 				} else {
 					attachVO.setFiletype("O"); // Other
 				}
-					
 				// 첨부파일정보 한개 등록하는 메소드 호출
 				attachDao.insertAttach(attachVO);
 			}
