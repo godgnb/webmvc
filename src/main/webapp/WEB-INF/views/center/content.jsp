@@ -64,7 +64,7 @@
 	<input type="button" value="글수정" class="btn" onclick="location.href='updateForm.do?num=${board.num}&pageNum=${pageNum}';"/>
 	<input type="button" value="글삭제" class="btn" onclick="location.href='deleteForm.do?num=${board.num}&pageNum=${pageNum}'"/>
 	<input type="button" value="답글쓰기" class="btn" onclick="location.href='reWriteForm.do?reRef=${board.reRef}&reLev=${board.reLev}&reSeq=${board.reSeq}';"/>
-	<input type="button" value="목록보기" class="btn" onclick="location.href='notice.do?pageNum=${board.num}';"/>
+	<input type="button" value="목록보기" class="btn" onclick="location.href='notice.do?pageNum=${pageNum}';"/>
 </div>
 
 </article>

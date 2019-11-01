@@ -40,7 +40,7 @@ public class NoticeAction implements Action {
 		int pageSize = 5;
 
 		// 시작행번호 구하기
-		int startRow = (pageNum - 1) * pageSize + 1; 
+		int startRow = (pageNum - 1) * pageSize; 
 
 		
 		// 글목록 가져오기 메소드 호출

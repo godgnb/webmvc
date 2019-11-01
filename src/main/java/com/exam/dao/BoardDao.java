@@ -4,7 +4,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ibatis.session.SqlSession;
+
 import com.exam.VO.BoardVO;
+import com.exam.dao.mapper.BoardMapper;
 
 public class BoardDao {
 
@@ -19,423 +22,77 @@ public class BoardDao {
 	
 	// insert할 레코드의 번호 생성 메소드
 	public int nextBoardNum() {
-		int num = 0;
-		
-		Connection con = null;
-		Statement stmt = null;
-		ResultSet rs = null;
-		
-		try {
-			con = DBManager.getConnection();
-			// num 컬럼값중에 최대값 구하기
-			String sql = "SELECT MAX(num) FROM jspdb.board";
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(sql);
-			// rs 레코드값 있으면 num = 최대값 +1
-			//			   없으면 num = 1
-			if (rs.next()) {
-				num = rs.getInt(1) + 1;
-			} else {
-				num = 1;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(con, stmt, rs);
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			// 인터페이스를 구현한 Mapper 프록시 객체를 만들어서 리턴함
+			BoardMapper mapper = sqlSession.getMapper(BoardMapper.class);
+			
+			int bnum = mapper.nextBoardNum();
+			
+			return bnum;
 		}
-		return num;
 	} // nextBoardNum
 	
 	
 	// 게시글 한개 등록하는 메소드
 	public void insertBoard(BoardVO boardVO) {
-		
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		StringBuilder sb = new StringBuilder();
-		
-		try {
-			con = DBManager.getConnection();
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			// 인터페이스를 구현한 Mapper 프록시 객체를 만들어서 리턴함
+			BoardMapper mapper = sqlSession.getMapper(BoardMapper.class);
 			
-			sb.append("INSERT INTO jspdb.board (num, username, passwd, subject, content, readcount, ip, reg_date, re_ref, re_lev, re_seq) ");
-			sb.append(" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			pstmt = con.prepareStatement(sb.toString());
-			pstmt.setInt(1, boardVO.getNum());
-			pstmt.setString(2, boardVO.getUsername());
-			pstmt.setString(3, boardVO.getPasswd());
-			pstmt.setString(4, boardVO.getSubject());
-			pstmt.setString(5, boardVO.getContent());
-			pstmt.setInt(6, boardVO.getReadcount());
-			pstmt.setString(7, boardVO.getIp());
-			pstmt.setTimestamp(8, boardVO.getRegDate());
-			pstmt.setInt(9, boardVO.getReRef());
-			pstmt.setInt(10, boardVO.getReLev());
-			pstmt.setInt(11, boardVO.getReSeq());
-			// 실행
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(con, pstmt);
+			mapper.insertBoard(boardVO);
+			sqlSession.commit();
 		}
-		
+		// try블록이 끝나명 SqlSession 변수의 close() 메소드 자동호출함.
 	} // insertBoard
-	
-//	//시작행번호부터 갯수만큼 가져오기(페이징)
-//	public List<BoardVO> getBoards(int startRow, int pageSize) {
-//		List<BoardVO> list = new ArrayList<BoardVO>();
-//		int endRow = startRow + pageSize - 1; //오라클전용 끝행번호
-//		
-//		Connection con = null;
-//		PreparedStatement pstmt = null;
-//		ResultSet rs = null;
-//		
-//		StringBuilder sb = new StringBuilder();
-//		sb.append("SELECT aa.* ");
-//		sb.append("FROM ");
-//		sb.append("    (SELECT ROWNUM AS rnum, a.* ");
-//		sb.append("    FROM ");
-//		sb.append("        (SELECT * ");
-//		sb.append("        FROM jspdb.board ");
-//		sb.append("        ORDER BY num DESC) a ");
-//		sb.append("    WHERE ROWNUM <= ? )aa ");
-//		sb.append("WHERE rnum >= ? ");
-//		
-//		try {
-//			con = DBManager.getConnection();
-//			pstmt = con.prepareStatement(sb.toString());
-//			pstmt.setInt(1, endRow);
-//			pstmt.setInt(2, startRow);
-//			// 실행
-//			rs = pstmt.executeQuery();
-//			while(rs.next()) {
-//				BoardVO boardVO = new BoardVO();
-//				boardVO.setNum(rs.getInt("num"));
-//				boardVO.setUsername(rs.getString("username"));
-//				boardVO.setPasswd(rs.getString("passwd"));
-//				boardVO.setSubject(rs.getString("subject"));
-//				boardVO.setContent(rs.getString("content"));
-//				boardVO.setFilename(rs.getString("filename"));
-//				boardVO.setReadcount(rs.getInt("readcount"));
-//				boardVO.setIp(rs.getString("ip"));
-//				boardVO.setReg_date(rs.getTimestamp("reg_date"));
-//				boardVO.setRe_ref(rs.getInt("re_ref"));
-//				boardVO.setRe_lev(rs.getInt("re_lev"));
-//				boardVO.setRe_seq(rs.getInt("re_seq"));
-//				// 리스트에 vo객체 한개 추가
-//				list.add(boardVO);
-//			} // while
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			DBManager.close(con, pstmt, rs);
-//		}
-//		
-//		return list;
-//	} // getBoards method
-//	
-//	
-//	// 검색어로 검색된 행의 시작행번호부터 갯수만큼 가져오기(페이징)
-//	public List<BoardVO> getBoards(int startRow, int pageSize, String search) {
-//		List<BoardVO> list = new ArrayList<BoardVO>();
-//		int endRow = startRow + pageSize - 1; //오라클전용 끝행번호
-//		
-//		Connection con = null;
-//		PreparedStatement pstmt = null;
-//		ResultSet rs = null;
-//		
-//		StringBuilder sb = new StringBuilder();
-//		sb.append("SELECT aa.* ");
-//		sb.append("FROM ");
-//		sb.append("    (SELECT ROWNUM AS rnum, a.* ");
-//		sb.append("    FROM ");
-//		sb.append("        (SELECT * ");
-//		sb.append("        FROM jspdb.board ");
-//		sb.append("		   WHERE subject LIKE ? ");
-//		sb.append("        ORDER BY num DESC) a ");
-//		sb.append("    WHERE ROWNUM <= ? )aa ");
-//		sb.append("WHERE rnum >= ? ");
-//		
-//		try {
-//			con = DBManager.getConnection();
-//			pstmt = con.prepareStatement(sb.toString());
-//			pstmt.setString(1, "%" + search + "%");
-//			pstmt.setInt(2, endRow);
-//			pstmt.setInt(3, startRow);
-//			// 실행
-//			rs = pstmt.executeQuery();
-//			while(rs.next()) {
-//				BoardVO boardVO = new BoardVO();
-//				boardVO.setNum(rs.getInt("num"));
-//				boardVO.setUsername(rs.getString("username"));
-//				boardVO.setPasswd(rs.getString("passwd"));
-//				boardVO.setSubject(rs.getString("subject"));
-//				boardVO.setContent(rs.getString("content"));
-//				boardVO.setFilename(rs.getString("filename"));
-//				boardVO.setReadcount(rs.getInt("readcount"));
-//				boardVO.setIp(rs.getString("ip"));
-//				boardVO.setReg_date(rs.getTimestamp("reg_date"));
-//				boardVO.setRe_ref(rs.getInt("re_ref"));
-//				boardVO.setRe_lev(rs.getInt("re_lev"));
-//				boardVO.setRe_seq(rs.getInt("re_seq"));
-//				// 리스트에 vo객체 한개 추가
-//				list.add(boardVO);
-//			} // while
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			DBManager.close(con, pstmt, rs);
-//		}
-//		
-//		return list;
-//	} // getBoards method
 
 	
 	// 검색어로 검색된 행의 시작행번호부터 갯수만큼 가져오기(페이징)
 	public List<BoardVO> getBoards(int startRow, int pageSize, String search) {
-		List<BoardVO> list = new ArrayList<BoardVO>();
-		int endRow = startRow + pageSize - 1; //오라클전용 끝행번호
-		
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		StringBuilder sb = new StringBuilder();
-		
-		/*
-		 * 오라클용 글목록 가져오기 SQL문. ROWNUM
-		sb.append("SELECT aa.* ");
-		sb.append("FROM ");
-		sb.append("    (SELECT ROWNUM AS rnum, a.* ");
-		sb.append("    FROM ");
-		sb.append("        (SELECT * ");
-		sb.append("        FROM jspdb.board ");
-		
-		// 검색어 search가 있을때는 검색조건절 where를 추가함
-		if (!(search == null || search.equals(""))) {
-			sb.append("		   WHERE subject LIKE ? ");			
-		}
-
-		sb.append("        ORDER BY re_ref DESC, re_seq ASC) a ");
-		sb.append("    WHERE ROWNUM <= ? )aa ");
-		sb.append("WHERE rnum >= ? ");
-		*/
-		
-		/*
-		 * My SQL용 글목록 가져오기 SQL문. 시작행번호 0부터 시작
-		 */
-		sb.append("SELECT * ");
-		sb.append("FROM jspdb.board ");
-		// 검색어 search가 있을때는 검색조건절 where를 추가함
-		if (!(search == null || search.equals(""))) {
-			sb.append("WHERE subject LIKE ? ");			
-		}
-		sb.append("ORDER BY re_ref DESC, re_seq ASC ");
-		sb.append("LIMIT ? OFFSET ? ");
-		
-		
-		try {
-			con = DBManager.getConnection();
-			pstmt = con.prepareStatement(sb.toString());
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			BoardMapper mapper = sqlSession.getMapper(BoardMapper.class);
 			
-			if (!(search == null || search.equals(""))) {
-				// 검색어가 있을때
-				pstmt.setString(1, "%" + search + "%");
-				
-				//pstmt.setInt(2, endRow);		// 오라클 기준
-				//pstmt.setInt(3, startRow);	// 오라클 기준
-				pstmt.setInt(2, pageSize);		// My SQL 기준
-				pstmt.setInt(3, startRow-1);	// My SQL 기준
-			} else {
-				// 검색어가 없을때
-				//pstmt.setInt(1, endRow);		// 오라클 기준
-				//pstmt.setInt(2, startRow);	// 오라클 기준
-				pstmt.setInt(1, pageSize);		// My SQL 기준
-				pstmt.setInt(2, startRow-1);		// My SQL 기준
-			}
+			List<BoardVO> boardList = mapper.getBoards(startRow, pageSize, search);
 			
-			// 실행
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
-				BoardVO boardVO = new BoardVO();
-				boardVO.setNum(rs.getInt("num"));
-				boardVO.setUsername(rs.getString("username"));
-				boardVO.setPasswd(rs.getString("passwd"));
-				boardVO.setSubject(rs.getString("subject"));
-				boardVO.setContent(rs.getString("content"));
-				boardVO.setReadcount(rs.getInt("readcount"));
-				boardVO.setIp(rs.getString("ip"));
-				boardVO.setRegDate(rs.getTimestamp("reg_date"));
-				boardVO.setReRef(rs.getInt("re_ref"));
-				boardVO.setReLev(rs.getInt("re_lev"));
-				boardVO.setReSeq(rs.getInt("re_seq"));
-				// 리스트에 vo객체 한개 추가
-				list.add(boardVO);
-			} // while
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(con, pstmt, rs);
+			return boardList;
 		}
-		
-		return list;
 	} // getBoards method
 	
 	
-//	// 게시판(jspdb.board) 테이블 레코드 개수 가져오기 메소드
-//	public int getBoardCount() {
-//		int count = 0;
-//		Connection con = null;
-//		Statement stmt = null;
-//		ResultSet rs = null;
-//		
-//		try {
-//			con = DBManager.getConnection();
-//			String sql = "SELECT COUNT(*) FROM jspdb.board";
-//			stmt = con.createStatement();
-//			// 실행
-//			rs = stmt.executeQuery(sql);
-//			
-//			rs.next(); // 커서 옮겨서 행 존재유무 true/false 리턴
-//			
-//			count = rs.getInt(1); // 행개수 count변수에 저장
-//			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			DBManager.close(con, stmt, rs);
-//		}
-//		return count;
-//	} // getBoardCount method
-//	
-//	
-//	// 게시판(jspdb.board) 테이블 레코드 개수 가져오기 메소드
-//	public int getBoardCount(String search) {
-//		int count = 0;
-//		Connection con = null;
-//		PreparedStatement pstmt = null;
-//		ResultSet rs = null;
-//		
-//		try {
-//			con = DBManager.getConnection();
-//			String sql = "SELECT COUNT(*) FROM jspdb.board ";
-//			sql += "WHERE subject LIKE ? ";
-//			pstmt = con.prepareStatement(sql);
-//			pstmt.setString(1, "%" + search + "%");
-//			// 실행
-//			rs = pstmt.executeQuery();
-//			
-//			rs.next(); // 커서 옮겨서 행 존재유무 true/false 리턴
-//			
-//			count = rs.getInt(1); // 행개수 count변수에 저장
-//			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			DBManager.close(con, pstmt, rs);
-//		}
-//		return count;
-//	} // getBoardCount method
-	
 		
 	// 게시판(jspdb.board) 테이블 레코드 개수 가져오기 메소드
-		public int getBoardCount(String search) {
-			int count = 0;
-			Connection con = null;
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
+	public int getBoardCount(String search) {
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			BoardMapper mapper = sqlSession.getMapper(BoardMapper.class);
 			
-			try {
-				con = DBManager.getConnection();
-				String sql = "SELECT COUNT(*) FROM jspdb.board ";
-				
-				if (!(search== null || search.equals(""))) {
-					sql += "WHERE subject LIKE ? ";
-				}
-					
-				pstmt = con.prepareStatement(sql);
-				
-				if (!(search== null || search.equals(""))) {
-					pstmt.setString(1, "%" + search + "%");
-				}
-				
-				// 실행
-				rs = pstmt.executeQuery();
-				
-				rs.next(); // 커서 옮겨서 행 존재유무 true/false 리턴
-				
-				count = rs.getInt(1); // 행개수 count변수에 저장
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				DBManager.close(con, pstmt, rs);
-			}
-			return count;
-		} // getBoardCount method
+			return mapper.getBoardCount(search);
+		}
+	} // getBoardCount method
 		
 	
 	// 특정 레코드의 조회수를 1 증가시키는 메소드
 	public void updateReadcount(int num) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		StringBuilder sb = new StringBuilder();
-		
-		try {
-			con = DBManager.getConnection();
-			sb.append("UPDATE jspdb.board ");
-			sb.append("SET readcount = readcount + 1 ");
-			sb.append("WHERE num = ?");
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			BoardMapper mapper = sqlSession.getMapper(BoardMapper.class);
 			
-			pstmt = con.prepareStatement(sb.toString());
-			pstmt.setInt(1, num);
-			// 실행
-			pstmt.executeUpdate();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(con, pstmt);
+			mapper.updateReadcount(num);
+			sqlSession.commit();
 		}
-
 	} // updateReadcount method
 	
 
 	// 글 한개를 가져오는 메소드 
 	public BoardVO getBoard(int num) {
-		BoardVO boardVO = null;
-		
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		try {
-			con = DBManager.getConnection();
-			String sql = "SELECT * FROM jspdb.board WHERE num = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, num);
-			// 실행
-			rs = pstmt.executeQuery();
-			if (rs.next()) {
-				boardVO = new BoardVO();
-				boardVO.setNum(rs.getInt("num"));
-				boardVO.setUsername(rs.getString("username"));
-				boardVO.setPasswd(rs.getString("passwd"));
-				boardVO.setSubject(rs.getString("subject"));
-				boardVO.setContent(rs.getString("content"));
-				boardVO.setReadcount(rs.getInt("readcount"));
-				boardVO.setIp(rs.getString("ip"));
-				boardVO.setRegDate(rs.getTimestamp("reg_date"));
-				boardVO.setReRef(rs.getInt("re_ref"));
-				boardVO.setReLev(rs.getInt("re_lev"));
-				boardVO.setReSeq(rs.getInt("re_seq"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(con, pstmt, rs);
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			BoardMapper mapper = sqlSession.getMapper(BoardMapper.class);
+			
+			return mapper.getBoard(num);
 		}
-		return boardVO;
 	} // getBoard method
 	
 	
@@ -443,36 +100,15 @@ public class BoardDao {
 	public boolean isPasswdEqual(int num, String passwd) {
 		boolean result = false;
 		
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT COUNT(*) ");
-		sb.append("FROM jspdb.board ");
-		sb.append("WHERE num = ? ");
-		sb.append("AND passwd = ? ");
-		
-		try {
-			con = DBManager.getConnection();
-			pstmt = con.prepareStatement(sb.toString());
-			pstmt.setInt(1, num);
-			pstmt.setString(2, passwd);
-			// 실행
-			rs = pstmt.executeQuery();
-			// 커서내리기
-			rs.next();
-			int count = rs.getInt(1); // 카운트값 가져오기
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			int count = sqlSession.getMapper(BoardMapper.class).countByNumAndPasswd(num, passwd);
 			if (count == 1) {
 				result = true; // 게시글 패스워드 같음
 			} else { // count == 0
 				result = false; // 게시글 패스워드 다름
 			}
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(con, pstmt, rs);
 		}
 		return result;
 	} // isPasswdEqual method
@@ -480,46 +116,22 @@ public class BoardDao {
 	
 	// 게시글 수정하기 메소드
 	public void updateBoard(BoardVO boardVO) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		
-		String sql = "";
-		sql = "UPDATE jspdb.board ";
-		sql += "SET subject=?, content=? ";
-		sql += "WHERE num =? ";
-		
-		try {
-			con = DBManager.getConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, boardVO.getSubject());
-			pstmt.setString(2, boardVO.getContent());
-			pstmt.setInt(3, boardVO.getNum());
-			// 실행
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(con, pstmt);
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			sqlSession.getMapper(BoardMapper.class).updateBoard(boardVO);
+			
+			sqlSession.commit();
 		}
 	} // updateBoard method
 	
 	
 	// 글번호에 해당하는 글 한개 삭제하기 메소드
 	public void deleteBoard(int num) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		
-		try {
-			con = DBManager.getConnection();
-			String sql="DELETE FROM jspdb.board WHERE num = ?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, num);
-			// 실행
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBManager.close(con, pstmt);
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			sqlSession.getMapper(BoardMapper.class).deleteBoard(num);
+			
+			sqlSession.commit();
 		}
 	} // deleteBoard method
 	
@@ -539,67 +151,34 @@ num		subject				reRef		reLev	   [reSeq]
 */
 	// 답글쓰기 메소드(update 이후 insert)
 	// 트랜잭션 처리가 요구됨(안전하게 처리하려는 목적)
-	public void reInsertBoard(BoardVO boardVO) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = "";
+	public boolean reInsertBoard(BoardVO boardVO) {
+		boolean isInserted = false; // 답글쓰기 성공여부
 		
-		try {
-			con = DBManager.getConnection();
-			con.setAutoCommit(false); // 기본값은 true
-			
-			
+		// Connection 가져오기
+		try (SqlSession sqlSession = DBManager.getSqlSessionFactory().openSession()) {
+			BoardMapper mapper = sqlSession.getMapper(BoardMapper.class);
 			// 같은 글그룹에서 답글순서(re_seq) 재배치
 			// 	조건 re_ref 같은그룹	re_seq 큰값 re_seq+1
-			sql  = "UPDATE jspdb.board ";
-			sql += "SET re_seq = re_seq + 1 ";
-			sql += "WHERE re_ref = ? ";
-			sql += "AND re_seq > ?";
-			
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, boardVO.getReRef());
-			pstmt.setInt(2, boardVO.getReSeq());
-			// 실행
-			pstmt.executeUpdate();
-			
-			// 기존 update문 가진 pstmt 닫기
-			pstmt.close();
+			mapper.updateReplyGroupSequence(boardVO.getReRef(), boardVO.getReSeq());
 			
 			// 답글 insert	re_ref그대로	re_lev+1	re_seq+1
-			sql  = "INSERT INTO jspdb.board (num, username, passwd, subject, content, readcount, ip, reg_date, re_ref, re_lev, re_seq) ";
-			sql += " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			// re_lev는 [답글을 다는 대상글]의 들여쓰기값 + 1
+			boardVO.setReLev(boardVO.getReLev() + 1);
+			// re_seq는 [답글을 다는 대상글]의 글그룹 내 순번값 + 1
+			boardVO.setReSeq(boardVO.getReSeq() + 1);
+			// 답글 insert 수행
+			mapper.insertBoard(boardVO);
 			
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, boardVO.getNum());
-			pstmt.setString(2, boardVO.getUsername());
-			pstmt.setString(3, boardVO.getPasswd());
-			pstmt.setString(4, boardVO.getSubject());
-			pstmt.setString(5, boardVO.getContent());
-			pstmt.setInt(6, boardVO.getReadcount());
-			pstmt.setString(7, boardVO.getIp());
-			pstmt.setTimestamp(8, boardVO.getRegDate());
-			pstmt.setInt(9, boardVO.getReRef()); // 그대로
-			pstmt.setInt(10, boardVO.getReLev() + 1); // re_lev+1
-			pstmt.setInt(11, boardVO.getReSeq() + 1); // re_seq+1
-			// 실행
-			pstmt.executeUpdate();
-			
-			// commit 실행
-			con.commit();
-			
-			// 기본설정인 auto commit으로 설정 되돌리기
-			con.setAutoCommit(true);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			try {
-				con.rollback(); // 실행중 예외발생 시 롤백처리
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		} finally {
-			DBManager.close(con, pstmt);
+			// 트랜잭션 작업 모두 성공적으로 수행되면 commit
+			sqlSession.commit();
 		}
+		// insert, update, delete문 수행후에는
+		// sqlSession.commit(); 메소드를 호출해야 DB에 반영됨.
+		
+		// sqlSession.commit();이 호출되지 않은 상태에서
+		// sqlSession.close() 이 호출되면 rollback 처리되어
+		// DB에 적용되지 않음.
+		return isInserted;
 	} // reInsertBoard method
 	
 } // BoardDao class
